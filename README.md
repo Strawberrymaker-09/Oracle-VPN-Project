@@ -74,5 +74,5 @@ Terraform, Oracle Cloud Infrastructure (OCI CLI), WSL/Ubuntu
 
 ## Random lessons so far
 
-- Oracle's card verification during signup can actually charge you a small real amount even when it says "verification failed" — happened to me, got it sorted through Oracle's support chat.
-- The free tier isn't infinite — "Always Free" just means the resource tier is free forever, not that it's always available. Good reminder that free ≠ unlimited/instant.
+- Oracle's card verification during signup can actually charge you a small real amount even when it says "verification failed", happened to me, got it sorted through Oracle's support chat.
+- The free tier isn't infinite, "Always Free" just means the resource tier is free forever, not that it's always available. Good reminder that free ≠ unlimited/instant.
