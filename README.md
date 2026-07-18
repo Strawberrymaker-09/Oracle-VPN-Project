@@ -2,13 +2,13 @@
 
 Self-hosted VPN server on Oracle Cloud, built with Terraform (and soon Ansible). Started as "I wanna play Roblox on university wifi" and turned into an actual excuse to learn cloud infrastructure properly instead of just clicking around a console.
 
-**Status: in progress.** Updating this as I go instead of writing it all at the end — so it's got the real mess in it, not just the polished final result.
+**Status: in progress.** Updating this as I go instead of writing it all at the end, so it's got the real mess in it, not just the polished final result.
 
 ## Why this exists
 
-Short version: my university's wifi blocks games, so Roblox doesn't run. Longer version: instead of just using a random free VPN app, I wanted to actually build my own — partly because it's more reliable/faster if it's mine, and partly because it turned into a genuinely good excuse to learn Terraform, cloud networking, and general "how does infrastructure actually work" stuff properly.
+Short version: my university's wifi blocks games, so Roblox doesn't run. Longer version: most of the free VPNs avliable are also blocked hece I wanted to actually build my own, partly because it's more reliable/faster if it's mine, and partly because it turned into a genuinely good excuse to learn Terraform, cloud networking, and general "how does infrastructure actually work" stuff properly.
 
-So yeah — the goal is real (get Roblox working on campus), but the point of doing it this way instead of the easy way is the learning.
+So yeah, the goal is real (get Roblox working on campus), but the point of doing it this way instead of the easy way is the learning.
 
 ## What this actually does
 
@@ -23,25 +23,25 @@ So yeah — the goal is real (get Roblox working on campus), but the point of do
 - [ ] GitHub Actions so infra changes get reviewed (`terraform plan`) before anything actually applies
 - [ ] Ansible Vault so no secrets/keys ever end up in this repo
 - [ ] Basic monitoring dashboard (Netdata) so I can see bandwidth/uptime
-- [ ] Actual threat model section — what this protects against, what it doesn't (spoiler: it's not protecting me from a nation-state, it's protecting me from campus IT blocking UDP traffic to Roblox)
+- [ ] Actual threat model section, what this protects against, what it doesn't (spoiler: it's not protecting me from a nation-state, it's protecting me from campus IT blocking UDP traffic to Roblox)
 
 ## Progress log
 
 ### ✅ Networking + VM config written (Terraform)
 `main.tf` sets up:
 - A private network (VCN) for the server to live in
-- Firewall rules — only SSH (22) and WireGuard (UDP 51820) allowed in, everything else blocked
+- Firewall rules, only SSH (22) and WireGuard (UDP 51820) allowed in, everything else blocked
 - An Always Free ARM VM (1 OCPU / 6GB RAM), Ubuntu 24.04, SSH key login only (no passwords)
 
 ### ✅ Networking resources created successfully
-VCN, gateway, route table, security list, subnet — all created fine on the first `terraform apply`.
+VCN, gateway, route table, security list, subnet, all created fine on the first `terraform apply`.
 
 ### 🔄 Currently stuck on: Oracle doesn't have free VM capacity right now
 Running into this on `terraform apply`:
 ```
 Error: 500-InternalError, Out of host capacity.
 ```
-Turns out this is a genuinely common thing with Oracle's free tier ARM VMs — they're popular because they're free, so regions run out of available capacity fairly often, especially Tokyo apparently. Not something I broke, just Oracle being out of stock basically.
+Turns out this is a genuinely common thing with Oracle's free tier ARM VMs, they're popular because they're free, so regions run out of available capacity fairly often, especially Tokyo apparently. Not something I broke, just Oracle being out of stock basically.
 
 **Fix:** wrote a small script (`retry-apply.sh`) that just keeps trying `terraform apply` every few minutes until Oracle actually has room, instead of me manually re-running it a hundred times:
 
