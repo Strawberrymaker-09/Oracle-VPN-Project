@@ -1,0 +1,52 @@
+---
+- name: Install and configure WireGuard
+  hosts: vpn_server
+  become: true
+
+  tasks:
+    - name: Install WireGuard
+      apt:
+        name: wireguard
+        state: present
+        update_cache: true
+
+    - name: Enable IP forwarding
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: "1"
+        sysctl_set: true
+        state: present
+        reload: true
+
+    - name: Generate and save WireGuard private key
+      shell: umask 077 && wg genkey > /etc/wireguard/privatekey
+      args:
+        creates: /etc/wireguard/privatekey
+
+    - name: Get private key content
+      command: cat /etc/wireguard/privatekey
+      register: private_key_content
+      changed_when: false
+
+    - name: Generate WireGuard public key
+      shell: "echo '{{ private_key_content.stdout }}' | wg pubkey"
+      register: wg_public_key
+      changed_when: false
+
+    - name: Create WireGuard config file
+      copy:
+        dest: /etc/wireguard/wg0.conf
+        mode: "0600"
+        content: |
+          [Interface]
+          PrivateKey = {{ private_key_content.stdout }}
+          Address = 10.10.10.1/24
+          ListenPort = 51820
+          PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o ens3 -j MASQUERADE
+          PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o ens3 -j MASQUERADE
+
+    - name: Start and enable WireGuard service
+      systemd:
+        name: wg-quick@wg0
+        enabled: true
+        state: started

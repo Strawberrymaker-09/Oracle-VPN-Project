@@ -93,16 +93,11 @@ resource "oci_core_instance" "vpn_server" {
   compartment_id      = var.compartment_id
   availability_domain = data.oci_identity_availability_domains.ads.availability_domains[0].name
   display_name        = "vpn-server"
-  shape               = "VM.Standard.A1.Flex"
-
-  shape_config {
-    ocpus         = 1
-    memory_in_gbs = 6
-  }
+  shape               = "VM.Standard.E2.1.Micro"
 
   source_details {
     source_type = "image"
-    source_id   = "ocid1.image.oc1.ap-tokyo-1.aaaaaaaac6xgrmnpr676gm356kgsf2lr23e2e5ik6oigfuno3ybz3nul5riq"
+    source_id   = "ocid1.image.oc1.ap-tokyo-1.aaaaaaaaoscw5alszu4h62xmlf2d3vusfpyyfxpooqxouff5wyc4w5g7e5bq"
   }
 
   create_vnic_details {
